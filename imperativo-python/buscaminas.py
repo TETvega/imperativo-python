@@ -2,8 +2,7 @@ import random
 import os
 import sys
 
-matrixA = []
-matrixB=[]
+
 # posibles   ʘ ʘ  ■ ʘ ■ □   
 
 def instructions():
@@ -25,9 +24,9 @@ def instructions():
         Coordenadas de movimiento:
         - Para jugar, deberás ingresar las coordenadas de la casilla que deseas abrir o marcar.
         Las coordenadas se ingresan en el formato x, y, donde:
-        - x es el número de la columna (horizontal).
-        - y es el número de la fila (vertical).
-        - Ejemplo: Para abrir la casilla en la columna 2, fila 3, ingresarías: 2 3.
+        - x es el número de la col (horizontal).
+        - y es el número de la row (vertical).
+        - Ejemplo: Para abrir la casilla en la col 2, row 3, ingresarías: 2 3.
 
         Acciones en la casilla:
         - Luego de ingresar las coordenadas, deberás indicar qué acción deseas realizar en la casilla:
@@ -51,9 +50,9 @@ def instructions():
         - Si estás jugando en un tablero de 5x5 (5 columnas y 5 filas):
 
         Ingresa las coordenadas y la acción:
-        - 2 3 0 -> Abre la casilla en la columna 2, fila 3.
-        - 4 5 1 -> Marca la casilla en la columna 4, fila 5 como mina.
-        - 4 5 0 -> Desmarca la casilla en la columna 4, fila 5 (la casilla ahora está libre y su contenido se mostrara).
+        - 2 3 0 -> Abre la casilla en la col 2, row 3.
+        - 4 5 1 -> Marca la casilla en la col 4, row 5 como mina.
+        - 4 5 0 -> Desmarca la casilla en la col 4, row 5 (la casilla ahora está libre y su contenido se mostrara).
 
         Si en cualquier momento decides dejar el juego, ingresa el comando 'exit'.
 
@@ -77,7 +76,7 @@ def printMatrix(matrix,rows):
     for i in range(rows):
         #str(cell) para hacer cada celda en string
         # :>n   para alinear n caracteres a la derecha
-        # ' '.join para unir todos los elementos de la fila con un espacio de por medio
+        # ' '.join para unir todos los elementos de la row con un espacio de por medio
         # lo dentro del join se conoce como expresion generadora
         formatted_row = ' '.join(f'{str(cell) :>3}' for cell in matrix[i])
         print(formatted_row)
@@ -109,24 +108,30 @@ def game():
     cols = insertValidNumber("Ingrese el numero de Columnas:  ")
 
     malla = []
-    for i in range ((cols*rows)):
-        malla.append(0)
-    print(malla)
+    matrixA = []
+    matrixB=[]
 
+    # se rellana la malla con los datos, 0 no se ha hecho nada, 1 para celdas con banderas y -1 para celdas mostradas
+    for i in range ((rows)):
+        malla.append([0]*cols)
+    print(malla)
+    # se rellenan las celdas con 0 para la matriz primera y con casilla para la inversa de juego
     for i in range(rows):
         matrixA.append([0]*cols)
         matrixB.append(["□"]*cols)
-
-    createGame(rows,cols)
-
+    # se reellna la matriz con minas
+    matrixA =createGame(rows,cols , matrixA)
+    totalMines = int((rows*cols) / 4)
+    flags = totalMines
+    insertedFlags=0
     print("Juego Creado con exito\n Buena Suerte ")
     os.system("pause")
     os.system("cls")
-
-    op=0
-    while op==0 :
+    while True :
         os.system("cls")
+        print(f"El numero de bombas es de: {totalMines}\n El numero de Banderas Restantes es de {flags-insertedFlags}")
         printMatrix(matrixB,rows)
+        #ingreso de las coordenadas
         while True:
             x = validNumber("Ingresa la Coordenada X: ", cols)
             y = validNumber("Ingresa la Coordenada Y: ", rows)
@@ -136,31 +141,39 @@ def game():
 
             # si es 0 no ha sido descubierta la casilla
             # si es 1 y la bandera es 2 es por que tenia una bandera y se va a descubrir
-            if (malla[((x*y)-1)] == 0 or malla[((x*y)-1)] == 1):
+
+            if (malla[y - 1][x - 1] == 0 or malla[y - 1][x - 1] == 1) and flag == 2:
                 print(f"La coordenada es: x: {x}, y: {y}")
+                break
+            if (malla[y - 1][x - 1] == 0 or malla[y - 1][x - 1] == 1) and flag == 1 and insertedFlags < flags:
                 break
 
             print(f"la coordenada {x} , {y} ya se ha mostrado elige otra")
             os.system("pause")
-        
+        #colocando bandera
         if(flag==1):
             matrixB[y-1][x-1] = "X"
-            malla[((x*y)-1)] = 1
-
+            insertedFlags+=1
+            malla[y-1][x-1] = 1
+        #mostrando casilla diferente de una bomba
         if (matrixA[y-1][x-1] != "*" and flag==2):
+            #mostrando la casilla antes marcada como bomba y otorgando una bandera nuevamente
+            if(matrixB[y-1][x-1] =="X" ):
+                insertedFlags -= 1
             matrixB[y-1][x-1] = matrixA[y-1][x-1]
-            malla[((x*y)-1)] = -1
+            malla[y-1][x-1] = -1
+        # mostrando la casilla con la bomba el juego termino
         if (matrixA[y-1][x-1] == "*" and flag==2):
             matrixB[y-1][x-1] = matrixA[y-1][x-1]
-            malla[((x*y)-1)] = -1
-            
+            malla[y-1][x-1] = -1
+        
             os.system("cls")
             print(f"GAME OVERRRRR")
             print(f"en la coordenada {x} , {y} se encuentra una Bomba")
 
             printMatrix(matrixA,rows)
             os.system("pause")
-
+            break
 
 
         
@@ -170,27 +183,35 @@ def game():
     
 
 
-def createGame(rows,cols):
+def createGame(rows,cols,matrixA):
     cells = rows * cols
     totalMines = int(cells / 4)
 
     # Colocar minas aleatoriamente
-    minas_colocadas = 0
-    while minas_colocadas < totalMines:
-        fila = random.randint(0, rows-1)
-        columna = random.randint(0, cols-1)
+    mines = 0
+    while   mines < totalMines:
+        # se crea para x una coodenada desde 0 hasta el limite de x lo mismo para y
+        row = random.randint(0, rows-1)
+        col = random.randint(0, cols-1)
         
-        # Colocar mina si la celda está vacía
-        if matrixA[fila][columna] != "*":
-            matrixA[fila][columna] = "*"
-            minas_colocadas += 1
+        # Colocar mina si la celda esta vacía
+        if matrixA[row][col] != "*":
+            matrixA[row][col] = "*"
+            mines += 1
             
             # Actualizar los numeros de las celdas adyacentes
-            for i in range(fila - 1, fila + 2):
-                for j in range(columna - 1, columna + 2):
+            # en un rando desde una fila antes de la fila normal hasta una fila despues de la fila normal
+            for i in range(row - 1, row + 2):
+                # en un rango de columnas de    x-1 , x , x+1
+                #       tenemos asegurado un rango 3*3
+
+                for j in range(col - 1, col + 2):
+
+                    # en un rango de 0 hasta el limite de x,  y de o hasta el limite de y
+                    # es para que la coordenada (x,y) este dentro del limite ademas que no sea una bomba
                     if 0 <= i < rows and 0 <= j < cols and matrixA[i][j] != "*":
                         matrixA[i][j] += 1
-
+    return matrixA
 
 def main():
     i = 0
