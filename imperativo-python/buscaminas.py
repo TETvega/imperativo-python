@@ -110,7 +110,7 @@ def game():
     malla = []
     matrixA = []
     matrixB=[]
-
+    opencells=0
     # se rellana la malla con los datos, 0 no se ha hecho nada, 1 para celdas con banderas y -1 para celdas mostradas
     for i in range ((rows)):
         malla.append([0]*cols)
@@ -162,6 +162,15 @@ def game():
                 insertedFlags -= 1
             matrixB[y-1][x-1] = matrixA[y-1][x-1]
             malla[y-1][x-1] = -1
+            opencells+=1
+
+            if (opencells ==  (rows*cols)-totalMines):
+                os.system("cls")
+                print(f"Felicitaciones GANASTE")
+                printMatrix(matrixA,rows)
+                os.system("pause")
+                break
+
         # mostrando la casilla con la bomba el juego termino
         if (matrixA[y-1][x-1] == "*" and flag==2):
             matrixB[y-1][x-1] = matrixA[y-1][x-1]
@@ -242,3 +251,91 @@ def main():
         
 
 main()
+
+
+
+# Enteros
+edad = 25
+anio = 2023
+# flotantes 
+medio = 0.5
+# Strings
+nombre = "Juan"
+mensaje = "Hola, ¿cómo estás?"
+# Lista de enteros
+numeros = [1, 2, 3, 4, 5]
+# Lista de strings
+nombres = ["Juan", "Ana", "Luis"]
+# Lista mixta
+mi_lista = [1, "Hola", True, 3.14]
+
+
+
+
+
+# Diccionario que representa un objeto
+persona = {
+    "nombre": "Pedro",
+    "edad": 30,
+    "ciudad": "Madrid"
+}
+
+# Acceso a valores de un diccionario
+print(persona["nombre"])  # Pedro
+# Función sin parámetros y sin retorno
+def saludar():
+    print("Hola, bienvenido!")
+
+# Función con parámetros
+def sumar(a, b):
+    return a + b
+
+# Función con parámetros por defecto
+def presentar(nombre="Desconocido"):
+    print(f"Hola, me llamo {nombre}")
+
+# Llamadas a las funciones
+saludar()  # Imprime: Hola, bienvenido!
+print(sumar(3, 4))  # Imprime: 7
+presentar("Carlos")  # Imprime: Hola, me llamo Carlos
+presentar()  # Imprime: Hola, me llamo Desconocido
+# Bucle while
+contador = 0
+while contador < 5:
+    print(f"El contador es {contador}")
+    contador += 1  # Incrementa el contador en 1
+#Bucle for
+for i in range(contador):
+    print("Hola mundo")
+option = 0
+
+#simulacion del switch ==>> pasa a ser match
+match(option):
+            case 1: 
+                os.system("cls")
+                game()
+            case 2:
+                sys.exit()
+            case 3: 
+                os.system("cls")
+                instructions()
+            case other:
+                print("Opcion Invalida")
+                os.system("pause")
+
+def clasificar_fruta(fruta):
+    match fruta:
+        case "manzana" | "pera" | "ciruela":
+            return "Fruta de hueso"
+        case "fresa" | "frambuesa":
+            return "Fruta del bosque"
+        case "naranja" | "limón":
+            return "Fruta cítrica"
+        case _:
+            return "Fruta desconocida"
+
+# Ejemplo de uso
+print(clasificar_fruta("manzana"))  # Imprime: Fruta de hueso
+print(clasificar_fruta("fresa"))     # Imprime: Fruta del bosque
+print(clasificar_fruta("naranja"))   # Imprime: Fruta cítrica
+print(clasificar_fruta("kiwi"))      # Imprime: Fruta desconocida

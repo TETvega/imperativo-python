@@ -67,7 +67,8 @@ def jugar_ahorcado():
         if letra in letras_adivinadas:
             print("Ya ingresaste esa letra, intenta con otra")
             continue # para saltarse el resto del codigo de esta iteracion y volver al inicio del bucle
-
+            #manzana
+            #manz  == manz
         if letra in palabra_secreta:
             letras_adivinadas.append(letra)
             if set(letras_adivinadas)==set(palabra_secreta):
